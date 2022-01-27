@@ -11,7 +11,7 @@ struct Good
     }
 }
 
-abstract class GoodsContainer
+class GoodsContainer
 {
     private Dictionary<Good, int> _content;
 
@@ -20,7 +20,7 @@ abstract class GoodsContainer
         Clear();
     }
 
-    protected void PutGoods(Good good, int count)
+    public void PutGoods(Good good, int count)
     {
         if (count <= 0)
             throw new ArgumentOutOfRangeException("Negative count value");
@@ -31,7 +31,7 @@ abstract class GoodsContainer
             _content[good] += count;
     }
 
-    protected void TakeGoods(Good good, int count)
+    public void TakeGoods(Good good, int count)
     {
         if (count <= 0)
             throw new ArgumentOutOfRangeException("Negative count value");
@@ -41,7 +41,7 @@ abstract class GoodsContainer
         _content[good] -= count;
     }
 
-    protected Dictionary<Good, int> GetAllGoods()
+    public Dictionary<Good, int> GetAllGoods()
     {
         Dictionary<Good, int> duplicate = new Dictionary<Good, int>();
 
@@ -53,22 +53,29 @@ abstract class GoodsContainer
         return duplicate;
     }
 
-    protected void Clear()
+    public void Clear()
     {
         _content = new Dictionary<Good, int>();
     }
 }
 
-class Warehouse : GoodsContainer
+class Warehouse
 {
+    private GoodsContainer _container;
+
+    public Warehouse()
+    {
+        _container = new GoodsContainer();
+    }
+
     public void Delive(Good good, int count)
     {
-        PutGoods(good, count);
+        _container.PutGoods(good, count);
     }
 
     public void Remove(Good good, int count)
     {
-        TakeGoods(good, count);
+        _container.TakeGoods(good, count);
     }
 }
 
@@ -87,40 +94,44 @@ class Shop
     }
 }
 
-class Cart : GoodsContainer
+class Cart
 {
+    private GoodsContainer _container;
     private Warehouse _warehouse;
 
     public Cart(Warehouse warehouse)
     {
+        _container = new GoodsContainer();
         _warehouse = warehouse;
     }
 
     public void Add(Good good, int count)
     {
         _warehouse.Remove(good, count);
-        PutGoods(good, count);
+        _container.PutGoods(good, count);
     }
 
     public Order Order()
     {
-        Order newOrder =  new Order(GetAllGoods());
-        Clear();
+        Order newOrder =  new Order(_container.GetAllGoods());
+        _container.Clear();
         return newOrder;
     }
 }
 
-class Order : GoodsContainer
+class Order
 {
+    private GoodsContainer _container;
     public readonly string Paylink;
 
     public Order(Dictionary<Good, int> content)
     {
+        _container = new GoodsContainer();
         Paylink = "";
 
         foreach(var key in content.Keys)
         {
-            PutGoods(key, content[key]);
+            _container.PutGoods(key, content[key]);
             Paylink += $"{key.Name} ({content[key]}) \n";
         }
     }
