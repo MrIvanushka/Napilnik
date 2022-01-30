@@ -28,7 +28,6 @@ namespace IMJunior
         {
             Console.WriteLine("Мы принимаем: " + _paymentSystemFactory.ShowSystemIds());
 
-            //симуляция веб интерфейса
             Console.WriteLine("Какое системой вы хотите совершить оплату?");
 
             return _paymentSystemFactory.CreatePaymentSystem(Console.ReadLine());
@@ -57,10 +56,7 @@ namespace IMJunior
         public abstract void Call();
 
         public abstract void CheckPayment();
-        /*
-            Console.WriteLine("Проверка платежа через " + SystemId);
-            Console.WriteLine("Оплата прошла успешно!");
-        */
+        
         public abstract PaymentSystem Clone();
     }
 
